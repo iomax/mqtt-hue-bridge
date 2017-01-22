@@ -6,6 +6,7 @@
  * @license MIT
  *
  * Examples:
+ *   /light/1/toggle
  *   /light/all/state        on
  *   /light/1/state          off
  *   /light/3/brightness     100
@@ -39,9 +40,29 @@ api.lights().then(function(result) {
         var property   = topicParts[2];
         var value      = message.toString();
 
+        var regexInteger = new RegExp('^\\d+$');
+
         // Determine state change from MQTT topic
         var newState = state;
         if(property == 'state') {
+            if( identifier != "all" ) {
+              if(regexInteger.test(identifier)) {
+                api.getLightStatus(identifier)
+                   .then(function(result){
+		     if(value == 'toggle') {
+	   	       if( result.state.on ) {                                          
+                         newState = state.off();               
+        	       } else newState = state.on();
+		     }	
+                   })
+		   .then(function(){
+		     if(value == 'toggle') {
+                       api.setLightState(identifier, newState).done();
+		     }
+                   })
+                   .done();
+              } else return;
+            } 
             if(value == 'on' || value == '1') {
                 newState = state.on();
             }
@@ -52,7 +73,6 @@ api.lights().then(function(result) {
             newState = state.brightness(value);
         }
 
-        var regexInteger = new RegExp('^\\d+$');
         if(identifier == "all") {
             // Group 0 is always all lights
             api.setGroupLightState(0, newState).done();
