@@ -1,6 +1,4 @@
 # mqtt-hue-bridge
-===========
-
 This node.js server listens on MQTT messages for lights and translates it to the philips hue bridge
 
 # Installation
@@ -29,8 +27,7 @@ $ mosquitto_pub -m "toggle" -t "light/1/state"
 $ mosquitto_pub -m "50" -t "light/2/brightness"
 ```
 # Credit
-
-The original mqtt-hue-bridge work was done by [Dennis de Greef](https://github.com/dennisdegreef) in his [mqtt-hue-brdige](https://github.com/dennisdegreef/mqtt-hue-bridge) project.
+The original mqtt-hue-bridge work was done by [Dennis de Greef](https://github.com/dennisdegreef) in his [mqtt-hue-bridge](https://github.com/dennisdegreef/mqtt-hue-bridge) project.
 
 
 
