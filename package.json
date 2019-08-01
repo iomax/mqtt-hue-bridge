@@ -1,15 +1,15 @@
 {
     "name": "mqtt-hue-bridge",
     "description": "This NodeJS application listens to MQTT messages and transforms them into Philips Hue API calls",
-    "author": "Dennis de Greef <github@link0.net>",
+    "author": "iomax"
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dependencies": {
         "mqtt": "^1.1",
         "node-hue-api": "^1.0"
     },
-    "repository" : {
-        "type" : "git",
-        "url" : "https://github.com/dennisdegreef/mqtt-hue-bridge.git"
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/iomax/mqtt-hue-bridge.git"
     }
 }

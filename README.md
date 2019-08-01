@@ -25,6 +25,8 @@ $ mosquitto_pub -m "on" -t "light/all/state"
 $ mosquitto_pub -m "off" -t "light/1/state"
 $ mosquitto_pub -m "toggle" -t "light/1/state"
 $ mosquitto_pub -m "50" -t "light/2/brightness"
+
+An empty message will produce a JSON object detailing the status of the lamp.
 ```
 # Credit
 The original mqtt-hue-bridge work was done by [Dennis de Greef](https://github.com/dennisdegreef) in his [mqtt-hue-bridge](https://github.com/dennisdegreef/mqtt-hue-bridge) project.

@@ -17,8 +17,29 @@ var mqtt     = require('mqtt');
 var hue      = require('node-hue-api');
 var config   = require('./config');
 
+var        client_Id  = 'mqttjs_' + Math.random().toString(16).substr(2, 8);
+var        mqttOptions = {
+                keepalive: 10,
+                clientId: client_Id,
+                protocolId: 'MQTT',
+                protocolVersion: 4,
+                clean: true,
+                reconnectPeriod: 1000,
+                connectTimeout: 30 * 1000,
+                will: {
+                        topic: '/lwt',
+                        payload: 'mqtt-hue-bridge Connection Closed abnormally..!',
+                        qos: 0,
+                        retain: false
+                },
+                username: config.mqtt.username,
+                password: config.mqtt.password,
+                rejectUnauthorized: false
+        };
+
+
 var mqttUri     = 'mqtt://' + config.mqtt.hostname + ':' + config.mqtt.port;
-var mqttOptions = {username: config.mqtt.username, password: config.mqtt.password};
+//var mqttOptions = {username: config.mqtt.username, password: config.mqtt.password};
 var client      = mqtt.connect(mqttUri, mqttOptions);
 var api         = new hue.HueApi(config.hue.hostname, config.hue.username);
 var state       = hue.lightState.create();
@@ -43,17 +64,18 @@ api.lights().then(function(result) {
         var regexInteger = new RegExp('^\\d+$');
 
         // Determine state change from MQTT topic
-        var newState = state;
+        var newState = undefined;
         if(property == 'state') {
             if( identifier != "all" ) {
               if(regexInteger.test(identifier)) {
                 api.getLightStatus(identifier)
                    .then(function(result){
-		     if(value == 'toggle') {
+		     if(value === '' ) client.publish(topic, JSON.stringify(result), { qos: 0 });
+		     else if(value == 'toggle') {
 	   	       if( result.state.on ) {                                          
                          newState = state.off();               
         	       } else newState = state.on();
-		     }	
+		     }
                    })
 		   .then(function(){
 		     if(value == 'toggle') {
@@ -73,12 +95,15 @@ api.lights().then(function(result) {
             newState = state.brightness(value);
         }
 
-        if(identifier == "all") {
-            // Group 0 is always all lights
-            api.setGroupLightState(0, newState).done();
-        } else if(regexInteger.test(identifier)) {
-            api.setLightState(identifier, newState).done();
-        }
+	if (newState !== undefined ) {
+           if(identifier == "all") {
+               // Group 0 is always all lights
+            	api.setGroupLightState(0, newState).done();
+           } else if(regexInteger.test(identifier)) {
+            	api.setLightState(identifier, newState).done();
+	   }
+	   newState = undefined;
+	}
     });
 }).done();
 
